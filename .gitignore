@@ -1,0 +1,11 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local dataset output and metadata (may contain copyrighted audio)
+dataset_mp3/
+manifest.csv
+
+# macOS
+.DS_Store
