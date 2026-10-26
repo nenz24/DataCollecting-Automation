@@ -6,9 +6,11 @@ A small Python utility for organizing YouTube audio recordings into a consistent
 
 - Reads the exact YouTube links supplied by you in `songs.csv`; it does not search for songs.
 - Uses one CSV row per recording, so the same song can have multiple recordings.
-- Assigns a sequential numeric dataset ID based on row order (for example, `0001`, `0002`).
-- Saves audio as MP3 and uses your supplied song title for the MP3 title tag.
-- Writes `manifest.csv` with the dataset ID, supplied title, YouTube title, channel, duration, URL, output filename, and processing status.
+- Creates one folder per song title.
+- Assigns a sequential numeric dataset ID globally across all songs (for example, `0001`, `0002`).
+- Keeps both the ID and song title in the filename, e.g. `dataset_mp3/Raja Semesta/0002 - Raja Semesta.mp3`.
+- Uses your supplied song title for the MP3 title tag.
+- Writes `manifest.csv` with the dataset ID, supplied title, YouTube title, channel, duration, URL, output path, and processing status.
 - Skips output files that already exist.
 
 > Only download audio that you own or are authorized to download and use. Check applicable platform terms and rights before downloading.
@@ -47,10 +49,10 @@ Build My Life,https://youtu.be/VIDEO_ID_3
 ```
 
 - One row represents one recording.
-- Multiple rows may use the same `song_title`; each row receives its own numeric ID.
+- Multiple rows may use the same `song_title`; each row receives its own globally unique numeric ID.
 - Paste the exact YouTube URL in `youtube_url`.
 - Replace the example URLs before running the script.
-- IDs are generated from row order, starting at `0001`. Keep row order stable after downloading; adding, removing, or reordering rows may change IDs.
+- IDs are generated from row order, starting at `0001`. Keep the existing row order and append new rows at the bottom so the IDs of already-downloaded recordings do not change.
 
 ## Run
 
@@ -58,13 +60,25 @@ Build My Life,https://youtu.be/VIDEO_ID_3
 python download_dataset.py
 ```
 
-The script creates:
+The script creates a separate folder per song title and keeps both ID and title in each filename:
 
-- `dataset_mp3/` — numbered MP3 files such as `0001 - Goodness of God.mp3`
-- `manifest.csv` — a metadata/status record for the current CSV rows
+```text
+dataset_mp3/
+├── Raja Semesta/
+│   ├── 0002 - Raja Semesta.mp3
+│   ├── 0003 - Raja Semesta.mp3
+│   └── 0004 - Raja Semesta.mp3
+└── Ha.. Hallelujah/
+    ├── 0005 - Ha.. Hallelujah.mp3
+    └── 0006 - Ha.. Hallelujah.mp3
 
-If a numbered MP3 already exists, the script skips downloading that row. If you change the URL but keep the same row order and title, remove or rename the old MP3 before running again.
+manifest.csv
+```
+
+IDs are global across the dataset and do not reset within each song folder. The `manifest.csv` records the corresponding folder and MP3 path for each CSV row.
+
+If you previously downloaded MP3s using the old flat-folder layout, the updated script does not move existing files automatically. The new version writes into song-specific subfolders. Move/backup your older files if you need them, or re-run the script to create the new folder structure.
 
 ## Notes
 
-The first YouTube result is **not** selected automatically: the URL is taken exactly from your CSV. Check the manifest and listen to the recordings to ensure that each recording matches your dataset needs.
+The first YouTube search result is **not** selected automatically: the URL is taken exactly from your CSV. Check the manifest and listen to the recordings to ensure that each recording matches the intended source.
