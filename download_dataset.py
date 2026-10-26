@@ -148,8 +148,10 @@ def main() -> None:
         dataset_id = f"{index:04d}"
         title = song["song_title"]
         url = song["youtube_url"]
-        filename = f"{dataset_id} - {safe_filename(title or 'untitled_song')}.mp3"
-        target = OUTPUT_DIR / filename
+        song_folder = safe_filename(title or "untitled_song")
+        song_dir = OUTPUT_DIR / song_folder
+        filename = f"{dataset_id} - {song_folder}.mp3"
+        target = song_dir / filename
 
         row: dict[str, Any] = {
             "id": dataset_id,
@@ -169,10 +171,13 @@ def main() -> None:
             if not url or not is_youtube_url(url):
                 raise ValueError("youtube_url must be a valid YouTube or youtu.be URL")
 
+            # Store each song title in its own directory.
+            song_dir.mkdir(parents=True, exist_ok=True)
+
             # Existing numbered file is preserved rather than downloaded again.
             if target.exists():
                 row["status"] = "already_exists"
-                print(f"  Already exists: {target.name}")
+                print(f"  Already exists: {target.relative_to(OUTPUT_DIR)}")
                 try:
                     with yt_dlp.YoutubeDL(info_options) as ydl:
                         info = ydl.extract_info(url, download=False)
@@ -201,7 +206,7 @@ def main() -> None:
 
             download_options = dict(options)
             download_options["outtmpl"] = str(
-                OUTPUT_DIR / f"{safe_filename(Path(filename).stem)}.%(ext)s"
+                song_dir / f"{Path(filename).stem}.%(ext)s"
             )
             with yt_dlp.YoutubeDL(download_options) as ydl:
                 ydl.download([url])
@@ -209,7 +214,7 @@ def main() -> None:
             if target.exists():
                 write_title_tag(target, title)
                 row["status"] = "downloaded"
-                print(f"  Saved: {target.name}")
+                print(f"  Saved: {target.relative_to(OUTPUT_DIR)}")
             else:
                 row["status"] = "error_output_missing"
                 print("  ERROR: MP3 output was not created. Check FFmpeg and yt-dlp.")
