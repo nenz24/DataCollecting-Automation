@@ -9,3 +9,6 @@ manifest.csv
 
 # macOS
 .DS_Store
+
+# Persistent mapping of YouTube video IDs to dataset IDs
+.dataset_ids.json
