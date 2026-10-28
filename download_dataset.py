@@ -24,6 +24,12 @@ except ImportError:
     sys.exit(1)
 
 try:
+    import static_ffmpeg
+except ImportError:
+    print("Missing dependencies. Run: python -m pip install -r requirements.txt")
+    sys.exit(1)
+
+try:
     from mutagen.easyid3 import EasyID3
 except ImportError:
     print("Missing dependencies. Run: python -m pip install -r requirements.txt")
@@ -328,6 +334,16 @@ def write_manifest(rows: list[dict[str, Any]]) -> None:
 
 
 def main() -> None:
+    # Install/download static ffmpeg + ffprobe in the Python environment.
+    # This avoids requiring Homebrew, sudo, or administrator access.
+    try:
+        static_ffmpeg.add_paths()
+        print("FFmpeg and ffprobe configured from the Python environment.")
+    except Exception as exc:
+        print(f"Could not prepare FFmpeg automatically: {exc}")
+        print("Check server internet access, then run: python -m pip install -r requirements.txt")
+        sys.exit(1)
+
     try:
         config = read_config()
         records = load_records(config)
