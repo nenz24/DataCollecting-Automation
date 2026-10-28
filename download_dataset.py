@@ -2,7 +2,6 @@
 """Read a Google Sheets song table and turn supplied YouTube URLs into MP3s.
 
 Expected columns: Song Title, Youtube Links 1, ..., Youtube Links 5.
-The optional "label" column is not required or used.
 Use only audio you own or are authorized to download and use.
 """
 from __future__ import annotations
