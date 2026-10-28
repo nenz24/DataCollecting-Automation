@@ -36,11 +36,7 @@ If you prefer a local CSV, set `"source": "csv"` in `config.json` and use `songs
 
 ## Setup
 
-Install FFmpeg on macOS:
-
-```bash
-brew install ffmpeg
-```
+No Homebrew or administrator password is required for FFmpeg. The project now uses `static-ffmpeg`, which downloads FFmpeg and ffprobe binaries for the current supported platform into the Python environment on first run.
 
 Create a virtual environment and install Python dependencies:
 
@@ -49,6 +45,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
+
+On the first run, `download_dataset.py` calls `static_ffmpeg.add_paths()`, which prepares both executables for yt-dlp. The server needs permission to install Python packages in the active virtual environment and internet access to retrieve the binaries.
 
 ## Run
 
